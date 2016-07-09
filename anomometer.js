@@ -6,12 +6,15 @@ var voltageMax = 2.0;
 var maxWindSpeed = 32;
 
 board.on('ready', function(){
-  	this.pinMode(1, five.Pin.ANALOG);
-  	this.analogRead(1, function(voltage) {
-     var voltageRead = voltage * voltageConstant;
-     var windSpeed = ( voltageRead - voltageMin ) * maxWindSpeed / ( voltageMax - voltageMin );
-     console.log( voltageRead );
-  });
+  	var anemometerPin = this.pinMode(5, five.Pin.ANALOG);
+  	var board = this;
+  	anemometerPin.analogRead(5, function(voltage) {
+  		board.loop( 3000, function() {
+		     var voltageRead = voltage * voltageConstant;
+		     var windSpeed = ( voltageRead - voltageMin ) * maxWindSpeed / ( voltageMax - voltageMin );
+		     console.log( voltageRead );
+  		});
+ 	 });
 });
 
 /*var serialport = require('serialport');
