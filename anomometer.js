@@ -1,10 +1,16 @@
 var five = require('johnny-five');
 var board = new five.Board();
+var voltageConstant = .004882814;
+var voltageMin = .4;
+var voltageMax = 2.0;
+var maxWindSpeed = 32;
 
 board.on('ready', function(){
   	this.pinMode(1, five.Pin.ANALOG);
   	this.analogRead(1, function(voltage) {
-    console.log(voltage);
+     var voltageRead = voltage * voltageConstant;
+     var windSpeed = ( voltageRead - voltageMin ) * maxWindSpeed / ( voltageMax - voltageMin );
+     console.log( voltageRead );
   });
 });
 

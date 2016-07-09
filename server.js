@@ -2,7 +2,14 @@ var five = require("johnny-five");
 var board = new five.Board();
 var https = require('https');
 var apiKey = 'fDVTVYtgmxi4iIAj7U_kMd1FBdB4oW4Y';
-
+//voltage constant for converting volts to wind speed for the anemometer
+var anemometerVC = .004882814;
+//the minimum voltage reading we should be getting from the anemometer
+var anemometerVM = .4;
+//the maxmimum voltage reading we should be getting from the anemometer
+var voltageMax = 2.0;
+//the max windspeed we'll get in m/s
+var maxWindSpeed = 32;
 
 function eventCapture( data, sensorid, collection ) {
   var time = new Date();
@@ -74,5 +81,14 @@ board.on("ready", function() {
   temperature.on("data", function() {
     eventCapture( this.celsius, this.pin, 'temp' );
     console.log(this.celsius + "°C");
+  });
+  
+  //setting up the anemometer logic 
+  this.pinMode(1, five.Pin.ANALOG);
+  this.analogRead(1, function(voltage) {
+     var voltageRead = voltage * voltageConstant;
+     var windSpeed = ( voltageRead - voltageMin ) * maxWindSpeed / ( voltageMax - voltageMin );
+     eventCapture( windSpeed, 'A5', 'anemometer' );
+     console.log( 'pin A5: ' + windSpeed );
   });
 });
